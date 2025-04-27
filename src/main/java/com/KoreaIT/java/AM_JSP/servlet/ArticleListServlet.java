@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.KoreaIT.java.AM_JSP.util.DBUtil;
+import com.KoreaIT.java.AM_JSP.util.SecSql;
 
 @WebServlet("/article/list")
 public class ArticleListServlet extends HttpServlet {
@@ -42,7 +43,9 @@ public class ArticleListServlet extends HttpServlet {
         	
         	DBUtil dbUtil = new DBUtil(request, response);
         	
-        	String sql = "SELECT * FROM article ORDER BY id DESC;";
+        	SecSql sql = SecSql.from("SELECT *");
+        	sql.append("FROM article");
+        	sql.append("ORDER BY id DESC;");
         	
         	List<Map<String, Object>> articleRows = dbUtil.selectRows(conn, sql);
         	
