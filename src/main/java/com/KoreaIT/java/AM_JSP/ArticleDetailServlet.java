@@ -12,8 +12,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet("/article/list")
-public class ArticleListServlet extends HttpServlet {
+@WebServlet("/article/detail")
+public class ArticleDetailServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
 		response.getWriter().append("실행");
@@ -40,12 +40,14 @@ public class ArticleListServlet extends HttpServlet {
         	
         	DBUtil dbUtil = new DBUtil(request, response);
         	
-        	String sql = "SELECT * FROM article ORDER BY id DESC;";
+        	int id = Integer.parseInt(request.getParameter("id"));
+        	 
+ 			String sql = String.format("SELECT * FROM article WHERE id = %d;", id);
+ 
+ 			Map<String, Object> articleRow = dbUtil.selectRow(conn, sql);
         	
-        	List<Map<String, Object>> articleRows = dbUtil.selectRows(conn, sql);
-        	
-        	request.setAttribute("articleRows", articleRows);
-        	request.getRequestDispatcher("/jsp/article/list.jsp").forward(request, response);
+        	request.setAttribute("articleRow", articleRow);
+        	request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response);
         } catch (SQLException e) {
             System.out.println("에러 1 : " + e);
         } finally {
