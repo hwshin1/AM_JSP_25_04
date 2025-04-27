@@ -40,7 +40,7 @@ public class ArticleListServlet extends HttpServlet {
         	
         	DBUtil dbUtil = new DBUtil(request, response);
         	
-        	String sql = "SELECT * FROM article;";
+        	String sql = "SELECT * FROM article ORDER BY id DESC;";
         	
         	List<Map<String, Object>> articleRows = dbUtil.selectRows(conn, sql);
         	
