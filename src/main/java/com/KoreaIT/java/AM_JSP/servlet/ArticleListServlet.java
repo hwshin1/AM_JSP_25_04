@@ -1,4 +1,4 @@
-package com.KoreaIT.java.AM_JSP;
+package com.KoreaIT.java.AM_JSP.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -11,6 +11,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+
+import com.KoreaIT.java.AM_JSP.util.DBUtil;
 
 @WebServlet("/article/list")
 public class ArticleListServlet extends HttpServlet {
