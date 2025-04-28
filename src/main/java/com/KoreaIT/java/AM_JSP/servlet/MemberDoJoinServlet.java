@@ -9,16 +9,14 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Map;
 
 import com.KoreaIT.java.AM_JSP.util.DBUtil;
 import com.KoreaIT.java.AM_JSP.util.SecSql;
 
-@WebServlet("/article/detail")
-public class ArticleDetailServlet extends HttpServlet {
+@WebServlet("/member/doJoin")
+public class MemberDoJoinServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-		response.getWriter().append("실행");
 		
 		// DB 연결
  		try {
@@ -39,16 +37,26 @@ public class ArticleDetailServlet extends HttpServlet {
         try {
         	conn = DriverManager.getConnection(url, user, password);
         	
-        	int id = Integer.parseInt(request.getParameter("id"));
-        	 
-        	SecSql sql = SecSql.from("SELECT *");
- 			sql.append("FROM article");
- 			sql.append("WHERE id = ?;", id);
- 
- 			Map<String, Object> articleRow = DBUtil.selectRow(conn, sql);
+        	String loginid = request.getParameter("loginId");
+        	String loginpw = request.getParameter("loginPw");
+        	String name = request.getParameter("name");
+        	String loginpwconfirm = request.getParameter("loginPwCon");
         	
-        	request.setAttribute("articleRow", articleRow);
-        	request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response);
+        	SecSql sql = SecSql.from("SELECT *");
+        	sql.append("FROM `member`");
+        	sql.append("WHERE loginId = ?,", loginid);
+        	
+        	
+        	
+        	sql = SecSql.from("INSERT INTO `member`");
+        	sql.append("SET regDate = NOW(),");
+        	sql.append("loginId = ?,", loginid);
+        	sql.append("loginPw = ?,", loginpw);
+        	sql.append("`name` = ?;", name);
+        	
+        	DBUtil.insert(conn, sql);
+        	
+        	response.getWriter().append(String.format("<script>alert('%s님 회원가입이 되었습니다.'); location.replace('../home/main');</script>", name));
         } catch (SQLException e) {
             System.out.println("에러 1 : " + e);
         } finally {
@@ -60,5 +68,9 @@ public class ArticleDetailServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
 	}
 }

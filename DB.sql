@@ -14,7 +14,6 @@ CREATE TABLE article (
 CREATE TABLE `member` (
                           id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
                           regDate DATETIME NOT NULL,
-                          updateDate DATETIME NOT NULL,
                           loginId CHAR(30) NOT NULL,
                           loginPw CHAR(200) NOT NULL,
                           `name` CHAR(100) NOT NULL
@@ -42,14 +41,12 @@ title = '제목3',
 # 회원 테스트 데이터 생성
 INSERT INTO `member`
 SET regDate = NOW(),
-updateDate = NOW(),
 loginId = 'test1',
 loginPw = 'test1',
 `name` = '김철수';
 
 INSERT INTO `member`
 SET regDate = NOW(),
-updateDate = NOW(),
 loginId = 'test2',
 loginPw = 'test2',
 `name` = '홍길동';
@@ -89,49 +86,3 @@ updateDate = NOW(),
 loginId = CONCAT('loginId ',SUBSTRING(RAND() * 1000 FROM 1 FOR 2)),
 loginPw = CONCAT('loginPw ',SUBSTRING(RAND() * 1000 FROM 1 FOR 2)),
 `name` = CONCAT('name ',SUBSTRING(RAND() * 1000 FROM 1 FOR 2));
-
-
-
-SELECT COUNT(*) > 0
-FROM `member`
-WHERE loginId = 'test2';
-
-SELECT 1 + 1;
-SELECT 1 >= 1;
-
-SELECT COUNT(*) > 0 FROM `member` WHERE loginId = 'test3';
-
-SELECT NOW();
-
-SELECT '제목1';
-
-SELECT CONCAT('제목',' 1');
-
-SELECT SUBSTRING(RAND() * 1000 FROM 1 FOR 2);
-
-INSERT INTO articleset regDate = NOW(),updateDate = NOW(),title = CONCAT('제목',SUBSTRING(RAND() * 1000 FROM 1 FOR 2)),`body` = CONCAT('내용',SUBSTRING(RAND() * 1000 FROM 1 FOR 2));
-
-
-
-UPDATE article
-SET updateDate = NOW(),
-    title = 'title1',
-    `body` = 'body1'
-WHERE id = 3;
-
-UPDATE article
-SET updateDate = NOW(),
-    `body` = 'body1'
-WHERE id = 1;
-
-SELECT * FROM article;
-
-SELECT COUNT(*)
-FROM article
-WHERE id = 5;
-
-UPDATE article
-SET updateDate = NOW(),
-    title = 'title1',
-    `body` = 'body1'
-WHERE id = 5;
