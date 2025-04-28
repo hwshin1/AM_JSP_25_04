@@ -24,6 +24,7 @@ table>thead>tr>th, table>tbody>tr>td {
 	<h2>게시글 목록</h2>
 
 	<a href="../home/main">메인으로 이동</a>
+	<a href="write">글쓰기</a>
 	
 	<div>
 		총 게시글 갯수 :
@@ -36,6 +37,7 @@ table>thead>tr>th, table>tbody>tr>td {
 			<tr>
 				<th>번호</th>
 				<th>날짜</th>
+				<th>수정날짜</th>
 				<th>제목</th>
 				<th>내용</th>
 				<th>삭제</th>
@@ -48,7 +50,8 @@ table>thead>tr>th, table>tbody>tr>td {
 			<tr style="text-align: center;">
 				<td><%=articleRow.get("id")%>번</td>
 				<td><%=articleRow.get("regDate")%></td>
-				<td><%=articleRow.get("title")%></td>
+				<td><%=articleRow.get("updateDate")%></td>
+				<td><a href="detail?id=<%=articleRow.get("id")%>"><%=articleRow.get("title")%></a></td>
 				<td><%=articleRow.get("body")%></td>
 				<td><a
 					onclick="if ( confirm('정말 삭제하시겠습니까?') == false ) { return false; }"

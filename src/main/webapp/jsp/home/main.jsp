@@ -4,12 +4,13 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>게시판 만들기</title>
 </head>
 <body>
 	<h1>메인 페이지</h1>
  	<ul>
  		<li><a href="../article/list">리스트로 이동</a></li>
+ 		<li><a href="../article/write">글쓰기</a></li>
  	</ul>
 </body>
 </html>
