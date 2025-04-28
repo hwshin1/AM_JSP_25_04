@@ -30,7 +30,7 @@ public class ArticleDetailServlet extends HttpServlet {
  		}
 		
 		String user = "root";
-		String password= "1234";
+		String password= "";
 		// serverTimezone 넣기 안넣으면 작동 안할수도 있음
 		String url = "jdbc:mysql://localhost:3306/AM_JSP_25_04?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf8";
 		
