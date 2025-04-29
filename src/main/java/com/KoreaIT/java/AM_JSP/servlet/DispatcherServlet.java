@@ -11,23 +11,16 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import com.KoreaIT.java.AM_JSP.util.DBUtil;
 import com.KoreaIT.java.AM_JSP.util.SecSql;
 
-@WebServlet("/article/doDelete")
-public class ArticleDeleteServlet extends HttpServlet {
+@WebServlet("/DispatcherServlet")
+public class DispatcherServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-		response.getWriter().append("실행");
-		
-		HttpSession session = request.getSession();
-    	
-    	if (session.getAttribute("loginedMemberId") == null) {
-    		response.getWriter().append(String.format("<script>alert('로그인 하세요.'); location.replace('../article/list');</script>"));
-    		return;
-    	}
 		
 		// DB 연결
  		try {
@@ -47,30 +40,8 @@ public class ArticleDeleteServlet extends HttpServlet {
 		
         try {
         	conn = DriverManager.getConnection(url, user, password);
+        	response.getWriter().append("연결 성공!");
         	
-        	int id = Integer.parseInt(request.getParameter("id"));
-        	
-        	SecSql sql = SecSql.from("SELECT *");
- 			sql.append("FROM article");
- 			sql.append("WHERE id = ?", id);
- 
- 			Map<String, Object> articleRow = DBUtil.selectRow(conn, sql);
- 
- 			int loginedMemberId = (int) session.getAttribute("loginedMemberId");
- 
- 			if (loginedMemberId != (int) articleRow.get("memberId")) {
- 				response.getWriter().append(
- 						String.format("<script>alert('%d번 글에 대한 권한 x'); location.replace('list');</script>", id));
- 				return;
- 			}
-        	 
-        	sql = SecSql.from("DELETE");
- 			sql.append("FROM article");
- 			sql.append("WHERE id = ?;", id);
- 			
- 			DBUtil.delete(conn, sql);
-        	
- 			response.getWriter().append(String.format("<script>alert('%d번 글이 삭제되었습니다.'); location.replace('list');</script>", id));
         } catch (SQLException e) {
             System.out.println("에러 1 : " + e);
         } finally {
@@ -82,5 +53,9 @@ public class ArticleDeleteServlet extends HttpServlet {
                 e.printStackTrace();
             }
         }
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
 	}
 }
