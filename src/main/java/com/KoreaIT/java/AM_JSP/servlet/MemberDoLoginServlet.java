@@ -16,8 +16,8 @@ import java.util.Map;
 import com.KoreaIT.java.AM_JSP.util.DBUtil;
 import com.KoreaIT.java.AM_JSP.util.SecSql;
 
-@WebServlet("/article/doWrite")
-public class ArticleDoWriteServlet extends HttpServlet {
+@WebServlet("/member/doLogin")
+public class MemberDoLoginServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
 		
@@ -40,21 +40,33 @@ public class ArticleDoWriteServlet extends HttpServlet {
         try {
         	conn = DriverManager.getConnection(url, user, password);
         	
+        	String loginid = request.getParameter("loginId");
+        	String loginpw = request.getParameter("loginPw");
+        	
+        	SecSql sql = SecSql.from("SELECT *");
+        	sql.append("FROM `member`");
+        	sql.append("WHERE loginId = ?;", loginid);
+        	
+        	Map<String, Object> memberRow = DBUtil.selectRow(conn, sql);
+        	
+        	System.out.println(memberRow);
+        	
+        	if (memberRow.isEmpty()) {
+        		response.getWriter().append(String.format("<script>alert('%s는 없는 아이디 입니다.'); location.replace('../member/login');</script>", loginid));
+        		return;
+        	}
+        	
+        	if (memberRow.get("loginPw").equals(loginpw) == false) {
+        		response.getWriter().append(String.format("<script>alert('비밀번호가 일치하지 않습니다.'); location.replace('../member/login');</script>"));
+        		return;
+        	}
+        	
         	HttpSession session = request.getSession();
+        	session.setAttribute("loginedMember", memberRow);
+        	session.setAttribute("loginedMemberId", memberRow.get("id"));
+        	session.setAttribute("loginedMemberLoginId", memberRow.get("loginId"));
         	
-        	String title = request.getParameter("title");
-        	String body = request.getParameter("body");
-        	int loginedMemberId = (int) session.getAttribute("loginedMemberId");
-        	
-        	SecSql sql = SecSql.from("INSERT INTO article");
-        	sql.append("SET regDate = NOW(),");
-        	sql.append("updateDate = NOW(),");
-        	sql.append("memberId = ?,", loginedMemberId);
-        	sql.append("title = ?,", title);
-        	sql.append("`body` = ?;", body);
-        	
-        	int id = DBUtil.insert(conn, sql);
-        	response.getWriter().append(String.format("<script>alert('%d번 글이 작성되었습니다.'); location.replace('list');</script>", id));
+        	response.getWriter().append(String.format("<script>alert('로그인 되었습니다.'); location.replace('../home/main');</script>"));
         } catch (SQLException e) {
             System.out.println("에러 1 : " + e);
         } finally {
@@ -67,8 +79,8 @@ public class ArticleDoWriteServlet extends HttpServlet {
             }
         }
 	}
-	
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
- 		doGet(request, response);
- 	}
+		doGet(request, response);
+	}
 }

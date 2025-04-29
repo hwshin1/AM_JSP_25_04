@@ -16,8 +16,8 @@ import java.util.Map;
 import com.KoreaIT.java.AM_JSP.util.DBUtil;
 import com.KoreaIT.java.AM_JSP.util.SecSql;
 
-@WebServlet("/article/doWrite")
-public class ArticleDoWriteServlet extends HttpServlet {
+@WebServlet("/member/doLogout")
+public class MemberDoLogoutServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
 		
@@ -41,20 +41,11 @@ public class ArticleDoWriteServlet extends HttpServlet {
         	conn = DriverManager.getConnection(url, user, password);
         	
         	HttpSession session = request.getSession();
+        	session.removeAttribute("loginedMember");
+        	session.removeAttribute("loginedMemberId");
+        	session.removeAttribute("loginedMemberLoginId");
         	
-        	String title = request.getParameter("title");
-        	String body = request.getParameter("body");
-        	int loginedMemberId = (int) session.getAttribute("loginedMemberId");
-        	
-        	SecSql sql = SecSql.from("INSERT INTO article");
-        	sql.append("SET regDate = NOW(),");
-        	sql.append("updateDate = NOW(),");
-        	sql.append("memberId = ?,", loginedMemberId);
-        	sql.append("title = ?,", title);
-        	sql.append("`body` = ?;", body);
-        	
-        	int id = DBUtil.insert(conn, sql);
-        	response.getWriter().append(String.format("<script>alert('%d번 글이 작성되었습니다.'); location.replace('list');</script>", id));
+        	response.getWriter().append(String.format("<script>alert('로그아웃 되었습니다.'); location.replace('../home/main');</script>"));
         } catch (SQLException e) {
             System.out.println("에러 1 : " + e);
         } finally {
@@ -67,8 +58,8 @@ public class ArticleDoWriteServlet extends HttpServlet {
             }
         }
 	}
-	
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
- 		doGet(request, response);
- 	}
+		doGet(request, response);
+	}
 }
