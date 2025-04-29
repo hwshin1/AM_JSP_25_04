@@ -18,7 +18,6 @@ import com.KoreaIT.java.AM_JSP.util.SecSql;
 public class ArticleDetailServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
-		response.getWriter().append("실행");
 		
 		// DB 연결
  		try {
