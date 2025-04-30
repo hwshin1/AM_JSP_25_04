@@ -14,10 +14,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import com.KoreaIT.java.AM_JSP.controller.ArticleController;
+import com.KoreaIT.java.AM_JSP.controller.HomeController;
 import com.KoreaIT.java.AM_JSP.util.DBUtil;
 import com.KoreaIT.java.AM_JSP.util.SecSql;
 
-@WebServlet("/DispatcherServlet")
+@WebServlet("/s/*")
 public class DispatcherServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
@@ -40,8 +42,74 @@ public class DispatcherServlet extends HttpServlet {
 		
         try {
         	conn = DriverManager.getConnection(url, user, password);
-        	response.getWriter().append("연결 성공!");
         	
+        	HttpSession session = request.getSession();
+    		
+    		boolean isLogined = false;
+    		int loginedMemberId = -1;
+    		Map<String, Object> loginedMember = null;
+    		
+    		if (session.getAttribute("loginedMemberId") != null) {
+    			isLogined = true;
+    			loginedMemberId = (int) session.getAttribute("loginedMemberId");
+    			loginedMember = (Map<String, Object>) session.getAttribute("loginedMember");
+    		}
+    		
+    		request.setAttribute("isLogined", isLogined);
+    		request.setAttribute("loginedMemberId", loginedMemberId);
+    		request.setAttribute("loginedMember", loginedMember);
+    		
+    		String requestUri = request.getRequestURI();
+    		
+    		System.out.println(requestUri);
+    		
+    		String[] reqUriBits = requestUri.split("/");
+    		
+    		if (reqUriBits.length < 5) {
+    			response.getWriter().append(String.format("<script>alert('올바른 요청이 아닙니다.'); location.replace('../home/main');</script>"));
+    			return;
+    		}
+        	
+    		String controllerName = reqUriBits[3];
+    		String actionMethodName = reqUriBits[4];
+    		
+    		if (controllerName.equals("home")) {
+    			HomeController homeController = new HomeController(request, response);
+    			homeController.showMain();
+    		} else if (controllerName.equals("article")) {
+    			ArticleController articleController = new ArticleController(request, response, conn);
+    			
+    			switch (actionMethodName) {
+					case "list": {
+						articleController.showList();
+						break;
+					}
+					case "detail": {
+						articleController.showDetail();
+						break;
+					}
+					case "doDelete": {
+						articleController.doDelete();
+						break;
+					}
+					case "write": {
+						articleController.showWrite();
+						break;
+					}
+					case "doWrite": {
+						articleController.doWrite();
+						break;
+					}
+					case "modify": {
+						articleController.showModify();
+						break;
+					}
+					case "doModify": {
+						articleController.doModify();
+						break;
+					}
+    			}
+    		}
         } catch (SQLException e) {
             System.out.println("에러 1 : " + e);
         } finally {

@@ -1,18 +1,26 @@
-package com.KoreaIT.java.AM_JSP.servlet;
+package com.KoreaIT.java.AM_JSP.controller;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.Map;
 
-@WebServlet("/home/main")
-public class HomeMainServlet extends HttpServlet {
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+public class HomeController {
+	private HttpServletRequest request;
+	private HttpServletResponse response;
+	private Connection conn;
+	
+	public HomeController(HttpServletRequest request, HttpServletResponse response) {
+		this.conn = conn;
+		this.request = request;
+		this.response = response;
+	}
+	
+	public void showMain() throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		
 		boolean isLogined = false;
@@ -30,9 +38,5 @@ public class HomeMainServlet extends HttpServlet {
 		request.setAttribute("loginedMember", loginedMember);
 		
 		request.getRequestDispatcher("/jsp/home/main.jsp").forward(request, response);
-	}
-	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
- 		doGet(request, response);
  	}
 }
