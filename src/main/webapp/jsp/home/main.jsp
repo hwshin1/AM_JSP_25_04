@@ -44,7 +44,13 @@ Map<String, Object> loginedMember = (Map<String, Object>) request.getAttribute("
  		<li><a href="../article/list">리스트로 이동</a></li>
  		<li><a href="../article/write">글쓰기</a></li>
  		<li><a href="../member/join">회원가입</a></li>
- 		<li><a href="../member/login">로그인</a></li>
+ 		<%
+		if (!isLogined) {
+		%>
+		<li><a href="../member/login">로그인</a></li>
+		<%
+		}
+		%>
  	</ul>
 </body>
 </html>

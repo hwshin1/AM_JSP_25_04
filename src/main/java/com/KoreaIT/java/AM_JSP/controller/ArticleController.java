@@ -5,23 +5,25 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
-import com.KoreaIT.java.AM_JSP.util.DBUtil;
-import com.KoreaIT.java.AM_JSP.util.SecSql;
+import com.KoreaIT.java.AM_JSP.service.ArticleService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 public class ArticleController {
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 	private Connection conn;
+	
+	private ArticleService articleService;
 
 	public ArticleController(HttpServletRequest request, HttpServletResponse response, Connection conn) {
 		this.conn = conn;
 		this.request = request;
 		this.response = response;
+		
+		this.articleService = new ArticleService(conn);
 	}
 	
 	private boolean isLogined() {
@@ -44,28 +46,10 @@ public class ArticleController {
     	int itemsInAPage = 10;
 		int limitFrom = (page - 1) * itemsInAPage;
 
-		SecSql sql = SecSql.from("SELECT COUNT(*)");
-		sql.append("FROM article;");
-
-		int totalCnt = DBUtil.selectRowIntValue(conn, sql);
+		int totalCnt = articleService.getTotalCnt();
 		int totalPage = (int) Math.ceil(totalCnt / (double)itemsInAPage);
     	
-    	sql = SecSql.from("SELECT *");
-    	sql.append("FROM article");
-    	sql.append("ORDER BY id DESC");
-    	sql.append("LIMIT ?, ?;", limitFrom, itemsInAPage);
-    	
-    	List<Map<String, Object>> articleRows = DBUtil.selectRows(conn, sql);
-    	
-    	HttpSession session = request.getSession();
-    	 
-		boolean isLogined = isLogined();
-		int loginedMemberId = isLogined ? getLoginedMemberId() : -1;
-		Map<String, Object> loginedMember = isLogined ? (Map<String, Object>) session.getAttribute("loginedMember") : null;
-
-		request.setAttribute("isLogined", isLogined);
-		request.setAttribute("loginedMemberId", loginedMemberId);
-		request.setAttribute("loginedMember", loginedMember);
+    	List<Map<String, Object>> articleRows = articleService.getArticleRows(limitFrom, itemsInAPage);
     	
     	request.setAttribute("page", page);
     	request.setAttribute("articleRows", articleRows);
@@ -78,13 +62,7 @@ public class ArticleController {
 	public void showDetail() throws ServletException, IOException {
 		int id = Integer.parseInt(request.getParameter("id"));
 		
-    	SecSql sql = SecSql.from("SELECT a.*, m.name");
-		sql.append("FROM article AS a");
-		sql.append("INNER JOIN `member` AS m");
-		sql.append("ON a.memberId = m.id");
-		sql.append("WHERE a.id = ?;", id);
-
-		Map<String, Object> articleRow = DBUtil.selectRow(conn, sql);
+    	Map<String, Object> articleRow = articleService.getarticleRow(id);
     	
     	request.setAttribute("articleRow", articleRow);
     	request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response);
@@ -98,11 +76,7 @@ public class ArticleController {
     	
 		int id = Integer.parseInt(request.getParameter("id"));
     	
-    	SecSql sql = SecSql.from("SELECT *");
-		sql.append("FROM article");
-		sql.append("WHERE id = ?", id);
-
-		Map<String, Object> articleRow = DBUtil.selectRow(conn, sql);
+    	Map<String, Object> articleRow = articleService.getarticleRow(id);
 
 		int loginedMemberId = getLoginedMemberId();
 
@@ -111,12 +85,7 @@ public class ArticleController {
     		return;
     	}
 		
-    	sql = SecSql.from("DELETE");
-		sql.append("FROM article");
-		sql.append("WHERE id = ?;", id);
-		
-		DBUtil.delete(conn, sql);
-	
+		articleService.getDelete(id);
 		response.getWriter().append(String.format("<script>alert('%d번 글이 삭제되었습니다.'); location.replace('list');</script>", id));
 	}
 
@@ -139,14 +108,7 @@ public class ArticleController {
     	String body = request.getParameter("body");
     	int loginedMemberId = getLoginedMemberId();
     	
-    	SecSql sql = SecSql.from("INSERT INTO article");
-    	sql.append("SET regDate = NOW(),");
-    	sql.append("updateDate = NOW(),");
-    	sql.append("memberId = ?,", loginedMemberId);
-    	sql.append("title = ?,", title);
-    	sql.append("`body` = ?;", body);
-    	
-    	int id = DBUtil.insert(conn, sql);
+    	int id = articleService.getDoWrite(title, body, loginedMemberId);
     	response.getWriter().append(String.format("<script>alert('%d번 글이 작성되었습니다.'); location.replace('list');</script>", id));
 	}
 
@@ -158,11 +120,7 @@ public class ArticleController {
 		
 		int id = Integer.parseInt(request.getParameter("id"));
     	
-    	SecSql sql = SecSql.from("SELECT *");
-    	sql.append("FROM article");
-    	sql.append("WHERE id = ?", id);
-    	
-    	Map<String, Object> articleRow = DBUtil.selectRow(conn, sql);
+    	Map<String, Object> articleRow = articleService.getarticleRow(id);
     	int loginedMemberId = getLoginedMemberId();
     	
     	if (loginedMemberId != (int) articleRow.get("memberId")) {
@@ -184,14 +142,7 @@ public class ArticleController {
     	String title = request.getParameter("title");
     	String body = request.getParameter("body");
     	
-    	SecSql sql = SecSql.from("UPDATE article");
-    	sql.append("SET updateDate = NOW(),");
-    	sql.append("title = ?,", title);
-    	sql.append("`body` = ?", body);
-    	sql.append("WHERE id = ?;", id);
-    	
-    	DBUtil.update(conn, sql);
-    	
+    	articleService.getUpdate(id, title, body);
     	response.getWriter().append(String.format("<script>alert('%d번 글이 수정되었습니다.'); location.replace('detail?id=%d');</script>", id, id));
 	}
 }

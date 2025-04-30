@@ -16,6 +16,7 @@ import java.util.Map;
 
 import com.KoreaIT.java.AM_JSP.controller.ArticleController;
 import com.KoreaIT.java.AM_JSP.controller.HomeController;
+import com.KoreaIT.java.AM_JSP.controller.MemberController;
 import com.KoreaIT.java.AM_JSP.util.DBUtil;
 import com.KoreaIT.java.AM_JSP.util.SecSql;
 
@@ -106,6 +107,31 @@ public class DispatcherServlet extends HttpServlet {
 					}
 					case "doModify": {
 						articleController.doModify();
+						break;
+					}
+    			}
+    		} else if (controllerName.equals("member")) {
+    			MemberController memberController = new MemberController(request, response, conn);
+    			
+    			switch(actionMethodName) {
+	    			case "join": {
+	    				memberController.join();
+	    				break;
+	    			}
+					case "doJoin": {
+						memberController.doJoin();
+						break;
+	    			}
+					case "login": {
+						memberController.login();
+						break;
+					}
+					case "doLogin": {
+						memberController.doLogin();
+						break;
+					}
+					case "doLogout": {
+						memberController.doLogout();
 						break;
 					}
     			}
