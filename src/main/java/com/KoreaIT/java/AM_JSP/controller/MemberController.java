@@ -5,8 +5,6 @@ import java.sql.Connection;
 import java.util.Map;
 
 import com.KoreaIT.java.AM_JSP.service.MemberService;
-import com.KoreaIT.java.AM_JSP.util.DBUtil;
-import com.KoreaIT.java.AM_JSP.util.SecSql;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
