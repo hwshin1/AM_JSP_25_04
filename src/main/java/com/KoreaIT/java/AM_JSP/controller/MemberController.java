@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.Map;
 
+import com.KoreaIT.java.AM_JSP.service.MemberService;
 import com.KoreaIT.java.AM_JSP.util.DBUtil;
 import com.KoreaIT.java.AM_JSP.util.SecSql;
 
@@ -16,11 +17,15 @@ public class MemberController {
 	private HttpServletRequest request;
 	private HttpServletResponse response;
 	private Connection conn;
+	
+	private MemberService memberService;
 
 	public MemberController(HttpServletRequest request, HttpServletResponse response, Connection conn) {
 		this.request = request;
 		this.response = response;
 		this.conn = conn;
+		
+		this.memberService = new MemberService(conn);
 	}
 
 	public void join() throws ServletException, IOException {
@@ -32,22 +37,12 @@ public class MemberController {
     	String loginpw = request.getParameter("loginPw");
     	String name = request.getParameter("name");
     	
-    	SecSql sql = SecSql.from("SELECT COUNT(*) AS cnt");
-    	sql.append("FROM `member`");
-    	sql.append("WHERE loginId = ?;", loginid);
-    	
-    	boolean isJoinableLoginId = DBUtil.selectRowIntValue(conn, sql) == 0;
+    	boolean isJoinableLoginId = memberService.getCountLoginId(loginid);
     	if (isJoinableLoginId == false) {
     		response.getWriter().append(String.format("<script>alert('%s는 이미 사용중 입니다.'); location.replace('../member/join');</script>", loginid));
     	}
     	
-    	sql = SecSql.from("INSERT INTO `member`");
-    	sql.append("SET regDate = NOW(),");
-    	sql.append("loginId = ?,", loginid);
-    	sql.append("loginPw = ?,", loginpw);
-    	sql.append("`name` = ?;", name);
-    	
-    	DBUtil.insert(conn, sql);
+    	memberService.getJoin(loginid, loginpw, name);
     	
     	response.getWriter().append(String.format("<script>alert('%s님 회원가입이 되었습니다.'); location.replace('../home/main');</script>", name));
 	}
@@ -60,11 +55,7 @@ public class MemberController {
 		String loginid = request.getParameter("loginId");
     	String loginpw = request.getParameter("loginPw");
     	
-    	SecSql sql = SecSql.from("SELECT *");
-    	sql.append("FROM `member`");
-    	sql.append("WHERE loginId = ?;", loginid);
-    	
-    	Map<String, Object> memberRow = DBUtil.selectRow(conn, sql);
+    	Map<String, Object> memberRow = memberService.getdoLoginId(loginid);
     	
     	System.out.println(memberRow);
     	

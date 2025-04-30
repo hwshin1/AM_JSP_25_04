@@ -71,11 +71,11 @@ SELECT *
 FROM `member`;
 
 ######################################################################
-
-# 게시글 데이터 대량 생성
+# 게시글 데이터 대량 생성 memberId 추가
 INSERT INTO article
 SET regDate = NOW(),
 updateDate = NOW(),
+memberId = CEILING(RAND() * 4),
 title = CONCAT('제목',SUBSTRING(RAND() * 1000 FROM 1 FOR 2)),
 `body` = CONCAT('내용',SUBSTRING(RAND() * 1000 FROM 1 FOR 2));
 
